@@ -63,9 +63,43 @@ def presuffixx(pattern, lenpattern, presuffix):
 #TO DO:
 #Approximation Matching
 #Levenshtein
+def Levenshtein(word, pattern):
+    lenword = len(word)
+    lenpattern = len(pattern)
+    levdist = [[ 0 for j in range(lenword + 1) ] for i in range(lenpattern + 1)]
+    #print(levdist)
+    for i in range(lenpattern + 1):
+        levdist[i][0] = i
+    for i in range(lenword + 1):
+        levdist[0][i] = i
+    for i in range(1, lenpattern + 1):
+        for j in range(1, lenword + 1):
+            if (pattern[i - 1] == word[j - 1]):
+                levdist[i][j] = levdist[i - 1][j - 1]
+            else:
+                temp1 = levdist[i][j - 1]
+                temp2 = levdist[i - 1][j - 1]
+                temp3 = levdist[i - 1][j]
+                if (temp1 <= temp2 and temp1 <= temp2):
+                    levdist[i][j] = temp1 + 1
+                elif (temp2 <= temp1 and temp2 <= temp3):
+                    levdist[i][j] = temp2 + 1
+                else:
+                    levdist[i][j] = temp3 + 1
+    return levdist[lenpattern][lenword]
+
+def matchingPercentage(word, pattern):
+    lenword = len(word)
+    lenpattern = len(pattern)
+    print(Levenshtein(word, pattern))
+    return float("{:.2f}".format((lenword + lenpattern - Levenshtein(word, pattern)) / (lenword + lenpattern)))
 
 start("katapenting.csv", "katatugas.csv")
+#TEST
 x = str(input("Kata: " ))
 y = str(input("Pola: "))
 testKMP = KMP(x, y)
-print(testKMP)
+if(testKMP == True):
+    print("Kecocokan ditemukan\n")
+else:
+    print("Tingkat Kecocokan sebesar", matchingPercentage(x, y), "ditemukan.\n")
