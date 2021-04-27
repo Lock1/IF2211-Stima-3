@@ -38,7 +38,6 @@ def KMP(word, pattern):
             idx2 += 1
         if idx2 == lenpattern:
             return True
-            idx2 = presuffix[idx2 - 1]
         elif idx1 < lenword and pattern[idx2] != word[idx1]:
             if idx2 != 0:
                 idx2 = presuffix[idx2 - 1]
@@ -91,7 +90,7 @@ def Levenshtein(word, pattern):
 def matchingPercentage(word, pattern):
     lenword = len(word)
     lenpattern = len(pattern)
-    print(Levenshtein(word, pattern))
+    #print(Levenshtein(word, pattern))
     return float("{:.2f}".format((lenword + lenpattern - Levenshtein(word, pattern)) / (lenword + lenpattern)))
 
 start("katapenting.csv", "katatugas.csv")
