@@ -9,6 +9,7 @@ kataDurasi = ["bulan", "minggu", "hari", "antara"]
 kataTugas = ["kuis", "ujian", "tucil", "tubes", "praktikum", "laporan"]
 kataTidakPenting = ["pada", "tentang", "ke", "jadi", "tambah"]
 
+global database
 database = []
 # Entry -> [DateArray, FullString], ex [[20, 10, 2021], "Laporan Stima"]
 
@@ -30,6 +31,26 @@ def databaseLookup(targetString, targetID=None):
 
     return None
 
+def loadDatabase():
+    print("readed")
+    readResult = []
+    with open("task-database.txt", "r") as data:
+        for row in list(data.readlines()):
+            row = row.rstrip()
+            dateArray = DateRegex.getDate(row)
+            taskString = DateRegex.removeOneDate(row)
+            taskString = taskString.rstrip()
+
+            fullEntry = [dateArray, taskString]
+            readResult.append(fullEntry)
+
+    return readResult
+
+def saveDatabase(targetDB):
+    with open("task-database.txt", "w") as txtfile:
+        for entry in targetDB:
+            dateString = "/".join([str(dateEntStr) for dateEntStr in entry[0]]) + " " + entry[1] + "\n"
+            txtfile.write(dateString)
 
 def isArrayMatchFound(sourceArray, targetString):
     for pattern in sourceArray:
@@ -70,6 +91,7 @@ def isDateTimeEqual(dateTime1, dateTime2):
 def evaluateString(targetString):
     queryResult = [None, None]
 
+    database = loadDatabase()
     # Adding branch
     if StringMatching.KMP(targetString.lower(), "tambah") or isArrayMatchFound(kataTugas, targetString):
         tempString = targetString
@@ -78,6 +100,11 @@ def evaluateString(targetString):
         dateArray = DateRegex.getDate(tempString)
         if dateArray != []:
             queryResult[0] = "add"
+
+            for tidakPenting in kataDurasi:
+                tempString = tempString.replace(tidakPenting, " ")
+            tempString = " ".join(tempString.split())
+
             queryResult[1] = [dateArray, DateRegex.stripDate(tempString)]
             database.append([dateArray, DateRegex.stripDate(tempString)])
         else:
@@ -98,6 +125,11 @@ def evaluateString(targetString):
                 if isValidDuration:
                     currentDateArray = [currentDate.day, currentDate.month, currentDate.year]
                     queryResult[0] = "add"
+
+                    for tidakPenting in kataDurasi:
+                        tempString = tempString.replace(tidakPenting, " ")
+                    tempString = " ".join(tempString.split())
+
                     queryResult[1] = [currentDateArray, DateRegex.stripDate(tempString)]
                     database.append([currentDateArray, DateRegex.stripDate(tempString)])
 
@@ -265,6 +297,7 @@ def evaluateString(targetString):
             queryResult[0] = "recommend"
             queryResult[1] = availableRecommendation
 
+    saveDatabase(database)
     return queryResult
 
 
