@@ -16,23 +16,23 @@
     <div class="input-group mb-3">
       <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
       <button class="btn btn-outline-secondary" id="submit" type="submit" value="Enter"  >Enter</button>
-    
+
     </div>
   </form>  -->
-  
+
 
   <div class="input-group mb-3">
     <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
     <button class="btn btn-outline-secondary" id="submit" type="submit" value="Enter"  >Enter</button>
-  
+
   </div>
 
-  
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script>
     $(document).on('keypress',function(e){
       if(e.which == 13) {
-        
+
         var text = $("#query").val();
         $("#query").val("");
 
@@ -46,11 +46,11 @@
           error: function(xhr) {
             //Do Something to handle error
           }
-        }); 
+        });
       }
     });
     $("#submit").click(function(e){
-        
+
         var text = $("#query").val();
         $("#query").val("");
 
@@ -64,9 +64,9 @@
           error: function(xhr) {
             //Do Something to handle error
           }
-        }); 
+        });
     });
-    
+
     </script>
 
 </body>
@@ -81,10 +81,10 @@
         border-radius: 5px;
         padding: 10px;
         margin: 10px 50px;
-        width: 580px;
+        width: 600px;
         text-align: left;
         float:left;
-        
+
         }
 
         /* Darker chat container */

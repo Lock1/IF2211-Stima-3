@@ -19,58 +19,52 @@ def about():
 def chat():
 	global storage
 	text = request.args.get('jsdata')
-	storage.append(text)
-	
-	return render_template("chat.html",storage=storage)
-	user.append(text)
+	storage.append([1, text])
+
 	evalList = Interface.evaluateString(text)
 	if evalList[0] == "add":
-		bot.append("Penambahan berhasil " + evalList[1][1])
+		storage.append([2, "Penambahan berhasil " + evalList[1][1]])
 	elif evalList[0] == "see-specific":
-		resultQuery = "Hasil Pencarian\n"
+		storage.append([2, "Hasil Pencarian\n"])
 		for taskWord in evalList[1]:
-			resultQuery = resultQuery + taskWord + "\n"
-		bot.append(resultQuery)
+			storage.append([2, taskWord])
 	elif evalList[0] == "see":
-		resultQuery = "Hasil Pencarian\n"
+		storage.append([2, "Hasil Pencarian\n"])
 		for taskEntry in evalList[1]:
-			resultQuery = resultQuery + taskEntry[1] + "\n"
-		bot.append(resultQuery)
+			storage.append([2, str(taskEntry[0][0]) + "/" + str(taskEntry[0][1]) + "/" + str(taskEntry[0][2]) + " " + taskEntry[1]])
 	elif evalList[0] == "update":
-		bot.append("Penggantian berhasil " + evalList[1][1])
+		storage.append([2, "Penggantian berhasil " + evalList[1][1]])
 	elif evalList[0] == "done":
-		bot.append("Task " + evalList[1] + " telah selesai")
+		storage.append([2, "Task " + evalList[1] + " telah selesai"])
 	elif evalList[0] == "delete":
-		bot.append("Penghapusan berhasil " + evalList[1][1])
+		storage.append([2, "Penghapusan berhasil " + evalList[1][1]])
 	elif evalList[0] == "help":
-		helpString = "Keyword tersedia\n"
-		helpString += "1. deadline\n"
-		helpString += "2. tambah\n"
-		helpString += "3. hapus\n"
-		helpString += "4. selesai\n"
-		helpString += "5. kapan\n"
-		helpString += "6. fitur / bantuan\n"
-		bot.append(helpString)
+		storage.append([2, "Keyword tersedia"])
+		storage.append([2, "1. deadline"])
+		storage.append([2, "2. tambah"])
+		storage.append([2, "3. hapus"])
+		storage.append([2, "4. selesai"])
+		storage.append([2, "5. kapan"])
+		storage.append([2, "6. fitur / bantuan"])
 	elif evalList[0] == "search-fail":
 		if evalList[1] == "see-specific":
-			bot.append("Tugas tidak ditemukan")
+			storage.append([2, "Tugas tidak ditemukan"])
 		elif evalList[1] == "see":
-			bot.append("Database kosong")
+			storage.append([2, "Database kosong"])
 		elif evalList[1] == "update":
-			bot.append("Pencarian tugas gagal")
+			storage.append([2, "Pencarian tugas gagal"])
 		elif evalList[1] == "delete":
-			bot.append("Penghapusan tugas gagal")
+			storage.append([2, "Penghapusan tugas gagal"])
 		elif evalList[1] == "done":
-			bot.append("Tugas tidak ditemukan")
+			storage.append([2, "Tugas tidak ditemukan"])
 	elif evalList[0] == "recommend":
-		baseString = "Kecocokan penuh tidak ditemukan, rekomendasi "
+		storage.append([2, "Kecocokan penuh tidak ditemukan, rekomendasi keyword:"])
 		for recWord in evalList[1]:
-			baseString = baseString + recWord + " "
-		bot.append(baseString)
+			storage.append([2, recWord])
 	else:
-		bot.append("Tidak ada kecocokan")
+		storage.append([2, "Tidak ada kecocokan"])
 
-	return render_template("chat.html",bot=bot,user=user)
+	return render_template("chat.html",storage=storage)
 
 if (__name__ == "__main__"):
 	app.run(debug=True)
