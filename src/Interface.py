@@ -15,22 +15,6 @@ database = []
 
 # --- Minor functions ---
 
-# Will returning physicalID and task string if found
-def databaseLookup(targetString, targetID=None):
-    if targetID == None:
-        for i in range(len(database)):
-            fullString = database[i][1]
-            splittedString = fullString.split(" ")
-            for word in splittedString:
-                if StringMatching.KMP(targetString.lower(), word.lower()):
-                    return [i, fullString]
-    else:
-        if 0 < targetID and targetID <= len(database):
-            physicalID = targetID - 1
-            return [physicalID, database[physicalID][1]]
-
-    return None
-
 def loadDatabase():
     readResult = []
     try:
@@ -72,7 +56,21 @@ def isDateTimeEqual(dateTime1, dateTime2):
     isYearMatch = (dateTime1.year == dateTime2.year)
     return isDayMatch and isMonthMatch and isYearMatch
 
+# Will returning physicalID and task string if found
+def databaseLookup(targetString, targetID=None):
+    if targetID == None:
+        for i in range(len(database)):
+            fullString = database[i][1]
+            splittedString = fullString.split(" ")
+            for word in splittedString:
+                if StringMatching.KMP(targetString.lower(), word.lower()):
+                    return [i, fullString]
+    else:
+        if 0 < targetID and targetID <= len(database):
+            physicalID = targetID - 1
+            return [physicalID, database[physicalID][1]]
 
+    return None
 
 
 # ----- evaluateString() return list -----
@@ -93,6 +91,7 @@ def isDateTimeEqual(dateTime1, dateTime2):
 def evaluateString(targetString):
     queryResult = [None, None]
 
+    global database
     database = loadDatabase()
     # Adding branch
     if StringMatching.KMP(targetString.lower(), "tambah") or isArrayMatchFound(kataTugas, targetString):
@@ -139,10 +138,10 @@ def evaluateString(targetString):
     # Updating and list branch
     elif StringMatching.KMP(targetString.lower(), "deadline"):
         # List deadline
+        numberRegex = re.search("[0-9]+", targetString)
         if isArrayMatchFound(kataDurasi, targetString.lower()):
             resultDateFilter = []
             currentDate = datetime.datetime.now()
-            numberRegex = re.search("[0-9]+", targetString)
             dateArray = DateRegex.getDate(targetString.lower())
             # Duration checking
             if StringMatching.KMP(targetString.lower(), "hari") and StringMatching.KMP(targetString.lower(), "ini"):
@@ -221,8 +220,15 @@ def evaluateString(targetString):
                 queryResult[1] = "see-specific"
 
         elif StringMatching.KMP(targetString.lower(), "kapan"):
-            # Single entry searching
-            resultDatabaseQuery = databaseLookup(targetString.lower())
+            # Single entry searching\
+            resultDatabaseQuery = None
+            if numberRegex != None:
+                numberInterval = numberRegex.span()
+                targetID = int(targetString[numberInterval[0]:numberInterval[1]])
+                resultDatabaseQuery = databaseLookup("", targetID)
+            else:
+                resultDatabaseQuery = databaseLookup(targetString.lower())
+
             if resultDatabaseQuery != None:
                 queryResult[0] = "see"
                 dateString = DateRegex.dateArrayToString(database[resultDatabaseQuery[0]][0])
@@ -304,6 +310,6 @@ def evaluateString(targetString):
 
 
 # # Testing
-# while 1:
-#     temp = input()
-#     print(evaluateString(temp))
+while 1:
+    temp = input()
+    print(evaluateString(temp))
