@@ -4,20 +4,10 @@ import requests
 
 app = Flask(__name__,template_folder = 'template')
 
-bot = []
-user = []
+storage = []
 
 @app.route("/")
 def main():
-	return render_template("home.html")
-
-@app.route("/sub1")
-def sub1():
-	return render_template("sub1.html")
-
-@app.route("/tes")
-def tes():
-	global reset
 	return render_template("index.html")
 	
 
@@ -27,15 +17,11 @@ def about():
 
 @app.route("/chat")
 def chat():
-	global chat
-	global bot
-	global user
-	global panjang
+	global storage
 	text = request.args.get('jsdata')
-	user.append(text)
-	bot.append("why tho")
+	storage.append(text)
 	
-	return render_template("chat.html",bot=bot,user=user)
+	return render_template("chat.html",storage=storage)
 
 if (__name__ == "__main__"):
 	app.run(debug=True)
