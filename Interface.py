@@ -32,17 +32,19 @@ def databaseLookup(targetString, targetID=None):
     return None
 
 def loadDatabase():
-    print("readed")
     readResult = []
-    with open("task-database.txt", "r") as data:
-        for row in list(data.readlines()):
-            row = row.rstrip()
-            dateArray = DateRegex.getDate(row)
-            taskString = DateRegex.removeOneDate(row)
-            taskString = taskString.rstrip()
+    try:
+        with open("task-database.txt", "r") as data:
+            for row in list(data.readlines()):
+                row = row.rstrip()
+                dateArray = DateRegex.getDate(row)
+                taskString = DateRegex.removeOneDate(row)
+                taskString = taskString.rstrip()
 
-            fullEntry = [dateArray, taskString]
-            readResult.append(fullEntry)
+                fullEntry = [dateArray, taskString]
+                readResult.append(fullEntry)
+    except:
+        readResult = []
 
     return readResult
 
@@ -290,7 +292,7 @@ def evaluateString(targetString):
     else:
         availableRecommendation = []
         for word in keyword:
-            if StringMatching.matchingPercentage(targetString.lower(), word) > 0.6:
+            if StringMatching.matchingPercentage(targetString.lower(), word) > 0.75:
                 availableRecommendation.append(word)
 
         if len(availableRecommendation) > 0:
@@ -301,7 +303,7 @@ def evaluateString(targetString):
     return queryResult
 
 
-# Testing
-while 1:
-    temp = input()
-    print(evaluateString(temp))
+# # Testing
+# while 1:
+#     temp = input()
+#     print(evaluateString(temp))
