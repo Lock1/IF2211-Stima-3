@@ -38,14 +38,42 @@ def getStringDate(stringSource, monthFound):
 
 
 def getDate(stringSource):
-    # Date/Month/Year
-    if re.search("/", stringSource) != None:
-        return getSlashedDate(stringSource)
+    # Get first occuring
+    removedString = stringSource.replace("/", " ")
+    regexStringDate = re.search("(.|)[0-9] (.|)(.|)(.|)(.|)(.|)(.|)(.|)(.|)(.|) [0-9][0-9][0-9][0-9]", removedString)
+    regexSlashDate = re.search("(.|)[0-9] (.|)[0-9] [0-9][0-9][0-9][0-9]", removedString)
 
-    # Date MonthString Year
-    for month in monthString:
-        if re.search(month.lower(), stringSource.lower()) != None:
-            return getStringDate(stringSource, month)
+    slashDateInterval = []
+    if regexSlashDate != None:
+        slashDateInterval = regexSlashDate.span()
+
+    stringDateInterval = []
+    if regexStringDate != None:
+        stringDateInterval = regexStringDate.span()
+
+    # Interval selection
+    selectedInterval = ""
+    if len(stringDateInterval) > 0 and len(slashDateInterval) > 0:
+        if stringDateInterval[0] < slashDateInterval[0]:
+            selectedInterval = "string based"
+        else:
+            selectedInterval = "slash based"
+    elif len(stringDateInterval) > 0:
+        selectedInterval = "string based"
+    elif len(slashDateInterval) > 0:
+        selectedInterval = "slash based"
+
+    if len(selectedInterval) > 0:
+        # Date/Month/Year
+        if selectedInterval == "slash based":
+            if re.search("/", stringSource) != None:
+                return getSlashedDate(stringSource)
+
+        # Date MonthString Year
+        else:
+            for month in monthString:
+                if re.search(month.lower(), stringSource.lower()) != None:
+                    return getStringDate(stringSource, month)
 
     return []
 

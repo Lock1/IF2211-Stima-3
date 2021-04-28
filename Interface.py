@@ -14,13 +14,20 @@ database = []
 
 # --- Minor functions ---
 
-def databaseLookup(targetString):
-    for i in range(len(database)):
-        fullString = database[i][1]
-        splittedString = fullString.split(" ")
-        for word in splittedString:
-            if StringMatching.KMP(targetString.lower(), word.lower()):
-                return [i, fullString]
+# Will returning physicalID and task string if found
+def databaseLookup(targetString, targetID=None):
+    if targetID == None:
+        for i in range(len(database)):
+            fullString = database[i][1]
+            splittedString = fullString.split(" ")
+            for word in splittedString:
+                if StringMatching.KMP(targetString.lower(), word.lower()):
+                    return [i, fullString]
+    else:
+        if 0 < targetID and targetID <= len(database):
+            physicalID = targetID - 1
+            return [physicalID, database[physicalID][1]]
+
     return None
 
 
@@ -57,6 +64,8 @@ def isDateTimeEqual(dateTime1, dateTime2):
 # ["search-fail", TaskString]  -> Database lookup failed, TaskString is "add", "see", "delete", etc
 # ["recommend", [Keyword]]     -> No exact keyword match found, [Keyword] list of nearest keyword
 # [None, None]                 -> No matching query
+
+# Full task string -> ID + " " + task + " " + date
 
 def evaluateString(targetString):
     queryResult = [None, None]
@@ -106,7 +115,7 @@ def evaluateString(targetString):
                 for databaseEntry in database:
                     if isDateArrayAndDateTimeEqual(databaseEntry[0], currentDate):
                         dateString = DateRegex.dateArrayToString(databaseEntry[0])
-                        mergedDateString = databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
+                        mergedDateString = str(database.index(databaseEntry) + 1) + " " + databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
                         resultDateFilter.append(mergedDateString)
 
             elif StringMatching.KMP(targetString.lower(), "hari") and numberRegex != None:
@@ -116,7 +125,7 @@ def evaluateString(targetString):
                     for databaseEntry in database:
                         if isDateArrayAndDateTimeEqual(databaseEntry[0], currentDate):
                             dateString = DateRegex.dateArrayToString(databaseEntry[0])
-                            mergedDateString = databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
+                            mergedDateString = str(database.index(databaseEntry) + 1) + " " + databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
                             resultDateFilter.append(mergedDateString)
                     currentDate += datetime.timedelta(days=1)
 
@@ -128,7 +137,7 @@ def evaluateString(targetString):
                     for databaseEntry in database:
                         if isDateArrayAndDateTimeEqual(databaseEntry[0], currentDate):
                             dateString = DateRegex.dateArrayToString(databaseEntry[0])
-                            mergedDateString = databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
+                            mergedDateString = str(database.index(databaseEntry) + 1) + " " + databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
                             resultDateFilter.append(mergedDateString)
                     currentDate += datetime.timedelta(days=1)
 
@@ -140,7 +149,7 @@ def evaluateString(targetString):
                     for databaseEntry in database:
                         if isDateArrayAndDateTimeEqual(databaseEntry[0], currentDate):
                             dateString = DateRegex.dateArrayToString(databaseEntry[0])
-                            mergedDateString = databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
+                            mergedDateString = str(database.index(databaseEntry) + 1) + " " + databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
                             resultDateFilter.append(mergedDateString)
                     currentDate += datetime.timedelta(days=1)
 
@@ -165,7 +174,7 @@ def evaluateString(targetString):
                         for databaseEntry in database:
                             if isDateArrayAndDateTimeEqual(databaseEntry[0], dateIter):
                                 dateString = DateRegex.dateArrayToString(databaseEntry[0])
-                                mergedDateString = databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
+                                mergedDateString = str(database.index(databaseEntry) + 1) + " " + databaseEntry[1] + " " + DateRegex.dateArrayToString(dateString)
                                 resultDateFilter.append(mergedDateString)
                         dateIter += datetime.timedelta(days=1)
 
@@ -216,15 +225,23 @@ def evaluateString(targetString):
         for tidakPenting in kataTidakPenting:
             tempString = tempString.replace(tidakPenting, " ")
         tempString = DateRegex.stripDate(tempString)
+        numberRegex = re.search("[0-9]+", targetString)
 
-        resultDatabaseQuery = databaseLookup(tempString)
+        resultDatabaseQuery = None
+        if numberRegex != None:
+            targetID = int(targetString[numberRegex.span()[0]:numberRegex.span()[1]])
+            resultDatabaseQuery = databaseLookup("", targetID)
+        else:
+            resultDatabaseQuery = databaseLookup(tempString)
+
+
         if resultDatabaseQuery != None:
             if StringMatching.KMP(targetString.lower(), "hapus"):
                 queryResult[0] = "delete"
             else:
                 queryResult[0] = "done"
             dateString = DateRegex.dateArrayToString(database[resultDatabaseQuery[0]][0])
-            queryResult[1] = resultDatabaseQuery[1] + " " + dateString
+            queryResult[1] = str(resultDatabaseQuery[0] + 1) + " " + resultDatabaseQuery[1] + " " + dateString
             database.pop(resultDatabaseQuery[0])
         else:
             queryResult[0] = "search-failed"
