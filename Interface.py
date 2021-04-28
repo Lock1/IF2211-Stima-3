@@ -67,11 +67,31 @@ def evaluateString(targetString):
         for tidakPenting in kataTidakPenting:
             tempString = tempString.replace(tidakPenting, " ")
         dateArray = DateRegex.getDate(tempString)
-        if dateArray != None:
-            # TODO : Relative
+        if dateArray != []:
             queryResult[0] = "add"
             queryResult[1] = [dateArray, DateRegex.stripDate(tempString)]
             database.append([dateArray, DateRegex.stripDate(tempString)])
+        else:
+            numberRegex = re.search("[0-9]+", targetString)
+            if numberRegex != None and isArrayMatchFound(kataDurasi, targetString.lower()):
+                numberInterval = numberRegex.span()
+                daySpan = int(targetString[numberInterval[0]:numberInterval[1]])
+                currentDate = datetime.datetime.now()
+
+                isValidDuration = False
+                if StringMatching.KMP(targetString.lower(), "minggu"):
+                    currentDate += datetime.timedelta(days=(7*daySpan))
+                    isValidDuration = True
+                elif StringMatching.KMP(targetString.lower(), "hari"):
+                    currentDate += datetime.timedelta(days=daySpan)
+                    isValidDuration = True
+
+                if isValidDuration:
+                    currentDateArray = [currentDate.day, currentDate.month, currentDate.year]
+                    queryResult[0] = "add"
+                    queryResult[1] = [currentDateArray, DateRegex.stripDate(tempString)]
+                    database.append([currentDateArray, DateRegex.stripDate(tempString)])
+
 
     # Updating and list branch
     elif StringMatching.KMP(targetString.lower(), "deadline"):
@@ -182,7 +202,7 @@ def evaluateString(targetString):
             tempString = DateRegex.stripDate(tempString)
 
             resultDatabaseQuery = databaseLookup(tempString)
-            if resultDatabaseQuery != None and dateArray != None:
+            if resultDatabaseQuery != None and dateArray != []:
                 database[resultDatabaseQuery[0]][0] = dateArray
                 queryResult[0] = "update"
                 queryResult[1] = resultDatabaseQuery[1] + " " + DateRegex.dateArrayToString(dateArray)
