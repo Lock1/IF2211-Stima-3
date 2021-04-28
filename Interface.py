@@ -6,7 +6,7 @@ keyword = ["hapus", "deadline", "selesai"]
 kataPenting = ["kelompok", "meet", "mata kuliah"]
 kataDurasi = ["bulan", "minggu", "hari"]
 kataTugas = ["kuis", "ujian", "tucil", "tubes", "praktikum", "laporan"]
-kataTidakPenting = ["pada", "tentang", "ke"]
+kataTidakPenting = ["pada", "tentang", "ke", "jadi", "tambah"]
 
 database = []
 # Entry -> [DateArray, FullString], ex [[20, 10, 2021], "Laporan Stima"]
@@ -38,15 +38,15 @@ def isArrayRegexFound(sourceArray, targetString):
 # ----- evaluateString() return list -----
 # In descending order
 # ["add", Full task string]    -> "tambah", kT + date - kTP
+# ["see", [Task list]]         -> "apa" + "deadline" / "kapan" + "deadline"
 # ["update", Full task string] -> "deadline" + taskDatabase + date
 # ["done", Full task string]   -> "selesai" + taskDatabase
 # ["delete", Full task string] -> "hapus" + taskDatabase
-# ["see", [Task list]]         -> "deadline"
 # ["help", None]               -> "bantuan", "fitur"
 # [None, None]                 -> No matching query
 
 def evaluateString(targetString):
-    resultingQuery = [None, None]
+    queryResult = [None, None]
 
     # Adding branch
     if StringMatching.KMP(targetString.lower(), "tambah") or isArrayRegexFound(kataTugas, targetString):
@@ -55,25 +55,43 @@ def evaluateString(targetString):
             tempString = tempString.replace(tidakPenting, " ")
         dateArray = DateRegex.getDate(tempString)
         if dateArray != None:
-            resultingQuery[0] = "add"
-            resultingQuery[1] = [dateArray, DateRegex.stripDate(tempString)]
-            # TODO : Add to database
+            queryResult[0] = "add"
+            queryResult[1] = [dateArray, DateRegex.stripDate(tempString)]
+            database.append([dateArray, DateRegex.stripDate(tempString)])
 
-    # Updating branch
+    # Updating and list branch
     elif StringMatching.KMP(targetString.lower(), "deadline"):
-        tempString = targetString
-        for tidakPenting in kataTidakPenting:
-            tempString = tempString.replace(tidakPenting, " ")
-        dateArray = DateRegex.getDate(tempString)
-        tempString = DateRegex.stripDate(tempString)
+        # List all deadline
+        if StringMatching.KMP(targetString.lower(), "apa") or StringMatching.KMP(targetString.lower(), "kapan"):
+            # tempString = targetString
+            # for tidakPenting in kataTidakPenting:
+            #     tempString = tempString.replace(tidakPenting, " ")
+            # dateArray = DateRegex.getDate(tempString)
+            # tempString = DateRegex.stripDate(tempString)
 
-        resultDatabaseQuery = databaseLookup(tempString)
-        if resultDatabaseQuery != None and dateArray != None:
-            database[resultDatabaseQuery[0]][0] = dateArray
-            resultingQuery[0] = "update"
-            resultingQuery[1] = resultDatabaseQuery[1] + " " + DateRegex.dateArrayToString(dateArray)
+            # resultDatabaseQuery = databaseLookup(tempString)
+            # if resultDatabaseQuery != None and dateArray != None:
+            #     database[resultDatabaseQuery[0]][0] = dateArray
+            queryResult[0] = "see"
+            queryResult[1] = database
+                # queryResult[1] = resultDatabaseQuery[1] + " " + DateRegex.dateArrayToString(dateArray)
 
-    elif StringMatching.KMP(targetString.lower(), "selesai"):
+        # Updating task
+        else:
+            tempString = targetString
+            for tidakPenting in kataTidakPenting:
+                tempString = tempString.replace(tidakPenting, " ")
+            dateArray = DateRegex.getDate(tempString)
+            tempString = DateRegex.stripDate(tempString)
+
+            resultDatabaseQuery = databaseLookup(tempString)
+            if resultDatabaseQuery != None and dateArray != None:
+                database[resultDatabaseQuery[0]][0] = dateArray
+                queryResult[0] = "update"
+                queryResult[1] = resultDatabaseQuery[1] + " " + DateRegex.dateArrayToString(dateArray)
+
+    # Solved task and delete branch
+    elif StringMatching.KMP(targetString.lower(), "selesai") or StringMatching.KMP(targetString.lower(), "hapus"):
         tempString = targetString
         for tidakPenting in kataTidakPenting:
             tempString = tempString.replace(tidakPenting, " ")
@@ -81,15 +99,23 @@ def evaluateString(targetString):
 
         resultDatabaseQuery = databaseLookup(tempString)
         if resultDatabaseQuery != None:
-            resultingQuery[0] = "done"
+            if StringMatching.KMP(targetString.lower(), "hapus"):
+                queryResult[0] = "delete"
+            else:
+                    queryResult[0] = "done"
             dateString = DateRegex.dateArrayToString(database[resultDatabaseQuery[0]][0])
-            resultingQuery[1] = resultDatabaseQuery[1] + " " + dateString
+            queryResult[1] = resultDatabaseQuery[1] + " " + dateString
             database.pop(resultDatabaseQuery[0])
 
+    # Help branch
+    elif StringMatching.KMP(targetString.lower(), "fitur") or StringMatching.KMP(targetString.lower(), "bantuan"):
+        queryResult[0] = "help"
+
     # TODO : Recommendation
-    return resultingQuery
+    return queryResult
 
 
 # Testing
-temp = input()
-print(evaluateString(temp))
+while 1:
+    temp = input()
+    print(evaluateString(temp))
