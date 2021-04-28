@@ -1,34 +1,71 @@
 {% extends "base.html" %}
 {% block title %}Sub Page{% endblock %}
 {% block content %}
-<div class="container">
-    <img src="static/doge.png" alt="sed" style="width:100%" style="height:100%" >
-    <p>Hello. How are you today?</p>
-  </div>
-  
-  <div class="container darker">
-    <img src="static/profile.png" alt="sed" style="width:100%" style="height:100%" class="right" >
-    <p>Hey! I'm fine. Thanks for asking!</p>
-  </div>
-  
+<body>
+
   <div class="container">
     <img src="static/doge.png" alt="sed" style="width:100%" style="height:100%" >
-    <p>Sweet! So, what do you wanna do today?</p>
-  </div>
-  
-  <div class="container darker">
-    <img src="static/profile.png" alt="sed" style="width:100%" style="height:100%" class="right">
-    <p>Nah, I dunno. Play soccer.. or learn more coding perhaps?</p>
+    <p>Apakah ada yang bisa dibantu?</p>
   </div>
 
-  <form method = "POST" action="">
-      
+  <div id="place_for_chat"></div>
+
+  <!-- <form method = "POST" action="" id="form">
     <div class="input-group mb-3">
-        <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
-        <button class="btn btn-outline-secondary" type="submit" value="Enter"  >Enter</button>
+      <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
+      <button class="btn btn-outline-secondary" id="submit" type="submit" value="Enter"  >Enter</button>
     
-      </div>
-  </form> 
+    </div>
+  </form>  -->
+
+  <div class="input-group mb-3">
+    <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" id="submit" type="submit" value="Enter"  >Enter</button>
+  
+  </div>
+
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script>
+    $(document).on('keypress',function(e){
+      if(e.which == 13) {
+        
+        var text = $("#query").val();
+
+        $.ajax({
+          url: "/chat",
+          type: "get",
+          data: {jsdata: text},
+          success: function(response) {
+            $("#place_for_chat").html(response);
+          },
+          error: function(xhr) {
+            //Do Something to handle error
+          }
+        }); 
+      }
+    });
+    $("#submit").click(function(e){
+        
+        var text = $("#query").val();
+
+        $.ajax({
+          url: "/chat",
+          type: "get",
+          data: {jsdata: text},
+          success: function(response) {
+            $("#place_for_chat").html(response);
+          },
+          error: function(xhr) {
+            //Do Something to handle error
+          }
+        }); 
+    });
+    </script>
+
+</body>
+
+
 
   <style>
       /* Chat containers */
@@ -37,7 +74,7 @@
         background-color: #f1f1f1;
         border-radius: 5px;
         padding: 10px;
-        margin: 10px 0;
+        margin: 10px 50px;
         }
 
         /* Darker chat container */
@@ -81,5 +118,6 @@
         color: #999;
         }
   </style>
+
 
 {% endblock %}
