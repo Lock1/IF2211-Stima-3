@@ -1,5 +1,3 @@
-kataPenting = ["kelompok", "deadline", "meet", "mata kuliah", "tambah", "hapus", "ada"]
-kataTugas = ["kuis", "ujian", "tucil", "tubes", "praktikum", "laporan"]
 presuffix = []
 
 #Exact String Matching
@@ -9,7 +7,6 @@ def KMP(word, pattern):
     idx1 = idx2 = 0
     presuffix = [0] * lenpattern
     presuffixx(pattern, presuffix)
-    print(presuffix)
     while idx1 < lenword:
         if pattern[idx2] == word[idx1]:
             idx1 += 1
@@ -73,12 +70,11 @@ def matchingPercentage(word, pattern):
     return float("{:.2f}".format((lenword + lenpattern - Levenshtein(word, pattern)) / (lenword + lenpattern)))
 
 
-start("katapenting.csv", "katatugas.csv")
 #TEST
-x = str(input("Kata: " ))
-y = str(input("Pola: "))
-testKMP = KMP(x, y)
-if(testKMP == True):
-    print("Kecocokan ditemukan\n")
-else:
-    print("Tingkat Kecocokan sebesar", matchingPercentage(x, y), "ditemukan.\n")
+# x = input("Kata: " )
+# y = input("Pola: ")
+# testKMP = KMP(x, y)
+# if(testKMP == True):
+#     print("Kecocokan ditemukan\n")
+# else:
+#     print("Tingkat Kecocokan sebesar", matchingPercentage(x, y), "ditemukan.\n")
