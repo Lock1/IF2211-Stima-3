@@ -10,6 +10,8 @@
 
   <div id="place_for_chat"></div>
 
+
+
   <!-- <form method = "POST" action="" id="form">
     <div class="input-group mb-3">
       <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
@@ -17,6 +19,7 @@
     
     </div>
   </form>  -->
+  
 
   <div class="input-group mb-3">
     <input type="text" id="query" name="query" class="form-control" placeholder="Say something to KangBot" aria-label="Type something..." aria-describedby="button-addon2">
@@ -31,6 +34,7 @@
       if(e.which == 13) {
         
         var text = $("#query").val();
+        $("#query").val("");
 
         $.ajax({
           url: "/chat",
@@ -48,6 +52,7 @@
     $("#submit").click(function(e){
         
         var text = $("#query").val();
+        $("#query").val("");
 
         $.ajax({
           url: "/chat",
@@ -61,6 +66,7 @@
           }
         }); 
     });
+    
     </script>
 
 </body>
@@ -75,12 +81,18 @@
         border-radius: 5px;
         padding: 10px;
         margin: 10px 50px;
+        width: 580px;
+        text-align: left;
+        float:left;
+        
         }
 
         /* Darker chat container */
         .darker {
         border-color: #ccc;
         background-color: #ddd;
+        text-align: right;
+        float: right;
         }
 
         /* Clear floats */
