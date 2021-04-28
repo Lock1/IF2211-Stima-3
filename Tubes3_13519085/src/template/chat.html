@@ -1,0 +1,22 @@
+<label id="value_lable">
+    
+    {% for i in range(storage|length) %}
+
+    {% if storage[i][0] == 1 %}
+    <div class="container darker">
+      <img src="static/profile.png" alt="sed" style="width:100%" style="height:100%" class="right">
+      <p>{{storage[i][1]}}</p>
+      
+    </div>
+    {% endif %}
+
+    {% if storage[i][0] == 2 %}
+    <div class="container">
+      <img src="static/doge.png" alt="sed" style="width:100%" style="height:100%" >
+      <p>{{storage[i][1]}}</p>
+    </div>
+    {% endif %}
+    
+    
+  {% endfor %}
+</label>
