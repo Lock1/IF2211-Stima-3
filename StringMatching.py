@@ -7,7 +7,6 @@ def KMP(word, pattern):
     idx1 = idx2 = 0
     presuffix = [0] * lenpattern
     presuffixx(pattern, presuffix)
-    print(presuffix)
     while idx1 < lenword:
         if pattern[idx2] == word[idx1]:
             idx1 += 1

@@ -61,3 +61,10 @@ def stripDate(stringSource):
     # Remove multiple space
     strippedString = " ".join(strippedString.split())
     return strippedString
+
+def dateArrayToString(dateArray):
+    resultString = str(dateArray)
+    resultString = resultString.replace(", ", "/")
+    resultString = resultString.replace("[", "")
+    resultString = resultString.replace("]", "")
+    return resultString
