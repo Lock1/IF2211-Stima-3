@@ -4,13 +4,13 @@ monthString = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "
 
 def getSlashedDate(stringSource):
     resultingDate = []
-    regexResult = re.search(".*[0-9]/.*[0-9]/[0-9][0-9][0-9][0-9]", stringSource)
+    stringSource = stringSource.replace("/", " ")
+    regexResult = re.search("(.|)[0-9] (.|)[0-9] [0-9][0-9][0-9][0-9]", stringSource)
     if regexResult != None:
         # Get index
         matchedIndexTuple = regexResult.span()
 
         # Casting to date
-        stringSource = stringSource.replace("/", " ")
         resultingDate.append(int(stringSource[matchedIndexTuple[0]:matchedIndexTuple[0]+2]))
         resultingDate.append(int(stringSource[matchedIndexTuple[0]+3:matchedIndexTuple[0]+5]))
 
@@ -23,7 +23,7 @@ def getSlashedDate(stringSource):
 
 def getStringDate(stringSource, monthFound):
     resultingDate = []
-    regexResult = re.search(".*[0-9] .*.*.*.*.*.*.*.*.* [0-9][0-9][0-9][0-9]", stringSource)
+    regexResult = re.search("(.|)[0-9] (.|)(.|)(.|)(.|)(.|)(.|)(.|)(.|)(.|) [0-9][0-9][0-9][0-9]", stringSource)
     if regexResult != None:
         # Get index
         matchedIndexTuple = regexResult.span()
@@ -46,3 +46,18 @@ def getDate(stringSource):
     for month in monthString:
         if re.search(month.lower(), stringSource.lower()) != None:
             return getStringDate(stringSource, month)
+
+def stripDate(stringSource):
+    strippedString = stringSource
+    # Remove month
+    for month in monthString:
+        strippedString = strippedString.replace(month, " ")
+
+    # Remove slash & number
+    strippedString = strippedString.replace("/", " ")
+    for i in range(10):
+        strippedString = strippedString.replace(str(i), " ")
+
+    # Remove multiple space
+    strippedString = " ".join(strippedString.split())
+    return strippedString
