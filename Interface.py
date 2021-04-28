@@ -73,6 +73,19 @@ def evaluateString(targetString):
             resultingQuery[0] = "update"
             resultingQuery[1] = resultDatabaseQuery[1] + " " + DateRegex.dateArrayToString(dateArray)
 
+    elif StringMatching.KMP(targetString.lower(), "selesai"):
+        tempString = targetString
+        for tidakPenting in kataTidakPenting:
+            tempString = tempString.replace(tidakPenting, " ")
+        tempString = DateRegex.stripDate(tempString)
+
+        resultDatabaseQuery = databaseLookup(tempString)
+        if resultDatabaseQuery != None:
+            resultingQuery[0] = "done"
+            dateString = DateRegex.dateArrayToString(database[resultDatabaseQuery[0]][0])
+            resultingQuery[1] = resultDatabaseQuery[1] + " " + dateString
+            database.pop(resultDatabaseQuery[0])
+
     # TODO : Recommendation
     return resultingQuery
 
