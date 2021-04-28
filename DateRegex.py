@@ -30,7 +30,7 @@ def getStringDate(stringSource, monthFound):
 
         # Casting to date
         resultingDate.append(int(stringSource[matchedIndexTuple[0]:matchedIndexTuple[0]+2]))
-        resultingDate.append(monthString.index(monthFound) + 1)
+        resultingDate.append(int(monthString.index(monthFound) + 1))
         regexResult = re.search("[0-9][0-9][0-9][0-9]", stringSource)
         matchedIndexTuple = regexResult.span()
         resultingDate.append(int(stringSource[matchedIndexTuple[0]:matchedIndexTuple[0]+4]))
@@ -47,6 +47,9 @@ def getDate(stringSource):
         if re.search(month.lower(), stringSource.lower()) != None:
             return getStringDate(stringSource, month)
 
+    return []
+
+
 def stripDate(stringSource):
     strippedString = stringSource
     # Remove month
@@ -62,9 +65,50 @@ def stripDate(stringSource):
     strippedString = " ".join(strippedString.split())
     return strippedString
 
+
 def dateArrayToString(dateArray):
     resultString = str(dateArray)
     resultString = resultString.replace(", ", "/")
     resultString = resultString.replace("[", "")
     resultString = resultString.replace("]", "")
     return resultString
+
+
+def removeOneDate(targetString):
+    removedString = targetString
+    removedString = removedString.replace("/", " ")
+    regexStringDate = re.search("(.|)[0-9] (.|)(.|)(.|)(.|)(.|)(.|)(.|)(.|)(.|) [0-9][0-9][0-9][0-9]", removedString)
+    regexSlashDate = re.search("(.|)[0-9] (.|)[0-9] [0-9][0-9][0-9][0-9]", removedString)
+
+    slashDateInterval = []
+    if regexSlashDate != None:
+        slashDateInterval = regexSlashDate.span()
+
+    stringDateInterval = []
+    if regexStringDate != None:
+        stringDateInterval = regexStringDate.span()
+
+    # Interval selection
+    selectedInterval = []
+    if len(stringDateInterval) > 0 and len(slashDateInterval) > 0:
+        if stringDateInterval[0] < slashDateInterval[0]:
+            selectedInterval = stringDateInterval
+        else:
+            selectedInterval = slashDateInterval
+    elif len(stringDateInterval) > 0:
+        selectedInterval = stringDateInterval
+    elif len(slashDateInterval) > 0:
+        selectedInterval = slashDateInterval
+
+    # Removing date
+    if len(selectedInterval) > 0:
+        removedString = ""
+        for i in range(len(targetString)):
+            if selectedInterval[0] <= i and i < selectedInterval[1]:
+                removedString += " "
+            else:
+                removedString += targetString[i]
+
+    # Remove multiple space
+    removedString = " ".join(removedString.split())
+    return removedString
