@@ -231,8 +231,7 @@ def evaluateString(targetString):
 
             if resultDatabaseQuery != None:
                 queryResult[0] = "see"
-                dateString = DateRegex.dateArrayToString(database[resultDatabaseQuery[0]][0])
-                queryResult[1] = resultDatabaseQuery[1] + " " + DateRegex.dateArrayToString(dateString)
+                queryResult[1] = [database[resultDatabaseQuery[0]]]
             else:
                 queryResult[0] = "search-failed"
                 queryResult[1] = "see"
@@ -310,6 +309,6 @@ def evaluateString(targetString):
 
 
 # # Testing
-while 1:
-    temp = input()
-    print(evaluateString(temp))
+# while 1:
+#     temp = input()
+#     print(evaluateString(temp))

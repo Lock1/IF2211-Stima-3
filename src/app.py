@@ -33,7 +33,7 @@ def chat():
 		for taskEntry in evalList[1]:
 			storage.append([2, str(taskEntry[0][0]) + "/" + str(taskEntry[0][1]) + "/" + str(taskEntry[0][2]) + " " + taskEntry[1]])
 	elif evalList[0] == "update":
-		storage.append([2, "Penggantian berhasil " + evalList[1][1]])
+		storage.append([2, "Penggantian berhasil " + evalList[1]])
 	elif evalList[0] == "done":
 		storage.append([2, "Task " + evalList[1] + " telah selesai"])
 	elif evalList[0] == "delete":
